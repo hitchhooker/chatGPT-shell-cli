@@ -251,9 +251,9 @@ while $running; do
 		image_url=$(echo $image_response | jq -r '.data[0].url')
 		echo -e "${CHATGPT_CYAN_LABEL}Your image was created. \n\nLink: ${image_url}\n"
 
-		if [[ "$TERM_PROGRAM" == "iTerm.app" ]]; then
+		if command -v img2sixel &>/dev/null; then
 			curl -sS $image_url -o temp_image.png
-			imgcat temp_image.png
+			img2sixel --high-color temp_image.png
 			rm temp_image.png
 		else
 			echo "Would you like to open it? (Yes/No)"

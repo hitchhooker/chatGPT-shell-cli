@@ -243,16 +243,23 @@ while $running; do
 		CHATGPT_CYAN_LABEL=""
 	fi
 
-	if [ "$prompt" == "exit" ] || [ "$prompt" == "q" ]; then
-		running=false
-	elif [[ "$prompt" =~ ^image: ]]; then
+	# check if prompt is an image request
+	if [[ "$prompt" =~ ^image: ]]; then
 		request_to_image "$prompt"
 		handle_error "$image_response"
 		image_url=$(echo $image_response | jq -r '.data[0].url')
+
 		echo -e "${CHATGPT_CYAN_LABEL}Your image was created. \n\nLink: ${image_url}\n"
 
-		if command -v img2sixel &>/dev/null; then
-			curl -sS $image_url -o temp_image.png
+		parent_process_name=$(ps -o comm= -p $(ps -o ppid= -p $$))
+		if command -v img2sixel &>/dev/null && [[ "$parent_process_name" == "alacritty" ]]; then
+			# Extract the authentication parameters from the URL
+			auth_params=$(echo $image_url | grep -oE "st=[^&]*&se=[^&]*&sp=[^&]*&sv=[^&]*&sr=[^&]*&skoid=[^&]*&sktid=[^&]*&skt=[^&]*&ske=[^&]*&sks=[^&]*&skv=[^&]*&sig=[^&]*")
+			echo $auth_params
+
+			# Download the image using the authentication parameters
+			curl -sS -G --data-urlencode "$auth_params" "$image_url" -o temp_image.png
+
 			img2sixel --high-color temp_image.png
 			rm temp_image.png
 		else

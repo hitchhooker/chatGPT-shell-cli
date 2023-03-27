@@ -1,0 +1,4 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Error><Code>AuthenticationFailed</Code><Message>Server failed to authenticate the request. Make sure the value of Authorization header is formed correctly including the signature.
+RequestId:8baaeaf2-001e-00c2-194a-607b32000000
+Time:2023-03-27T01:24:55.7207794Z</Message><AuthenticationErrorDetail>Authentication scheme Bearer is not supported in this version.</AuthenticationErrorDetail></Error>
